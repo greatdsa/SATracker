@@ -4,6 +4,7 @@ import math
 from numpy import mean
 import threading
 
+#Eye Tracker Initialization
 found_eyetrackers = tr.find_all_eyetrackers()
 my_eyetracker = found_eyetrackers[0]
 print("Address: " + my_eyetracker.address)
@@ -26,14 +27,11 @@ for x in range(1,2):
  t = threading.Thread(target=gaze_data_callback(), args=(x,))
  t.start()
 
- #Working on
-def DATA_2D():
+ #Working on 2D data
+def data_collection():
     while running:
-        data, address = data_socket.recvfrom(1024)
-        a = eval(data)
-        if 'gp' in a.keys():
-            data = a['gp']
-            s = a['s']
+        if 'gaze_point' in gaze_data_callback():
+            data = gaze_data_callback['gaze_point']
 
             if s == 0:
                 x = data[0] * 1920
