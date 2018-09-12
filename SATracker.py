@@ -24,7 +24,7 @@ def gaze_data_callback(gaze_data):
 
 #Starting thread
 for x in range(1,2):
- t = threading.Thread(target=gaze_data_callback(), args=(x,))
+ t = threading.Thread(target=gaze_data_callback(gaze_data), args=(x,))
  t.start()
 
  #Working on 2D data
