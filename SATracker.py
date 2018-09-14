@@ -74,9 +74,9 @@ def datac():
 def main():
 
     p1 = multiprocessing.Process(name="p1", target=datac)
-    #p2 = multiprocessing.Process(name="p2", target=test)
+    p2 = multiprocessing.Process(name="p2", target=test)
     p1.start()
-    #p2.start()
+    p2.start()
 
 if __name__ == "__main__":
    main()
