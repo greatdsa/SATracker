@@ -13,43 +13,16 @@ print("Name (It's OK if this is empty): " + my_eyetracker.device_name)
 print("Serial number: " + my_eyetracker.serial_number)
 
 
-    #from mean import gaze_data_callback
-class eye(object):
-        def gaze_data_callback(gaze_data):
-                left_3d = gaze_data['left_gaze_point_in_user_coordinate_system']
-                right_3d = gaze_data['right_gaze_point_in_user_coordinate_system']
-            #Get the gaze point of both eyes
-                #print('L3d:', left_3d)
-                #print('R3d:', right_3d)
-                #numbers = [0, 0, 0]
-                #numbers[0] = [left_3d[0], right_3d[0]]
-                #numbers[1] = [left_3d[1], right_3d[1]]
-                #numbers[2] = [left_3d[2], right_3d[2]]
-                #print(numbers)
-                #x = [0, 0, 0]
-                #x[0] = sum(numbers[0])
-                #x[1] = sum(numbers[1])
-                #x[2] = sum(numbers[2])
-                #x[0] = x[0]/2
-                #x[1] = x[1]/2
-                #x[2] = x[2]/2
-                #print(x)
-
-                gaze_point = ((left_3d), (right_3d))
-                gaze_point = tuple(mean(gaze_point, axis=0))
-                gaze_point = tuple(mean(gaze_point, axis=0))
-                print("3d gaze:",gaze_point)
-                my_eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback, as_dictionary=True)
-                time.sleep(5)
-
-                my_eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
-        #Get the timestamp
-                #timestamp = tr.get_system_time_stamp()
-                #print(timestamp)
-                return (x)
+# Getting Gaze Point
+def gaze_data_callback(gaze_data):
+        left_3d = gaze_data['left_gaze_point_in_user_coordinate_system']
+        right_3d = gaze_data['right_gaze_point_in_user_coordinate_system']
+        gaze_point = (left_3d, right_3d)
+        gaze_point = tuple(map(mean, zip(*gaze_point)))
+        print("3d gaze point:",gaze_point)
 
 
-         #Working on 2D data
+#Random Test Function
 def test():
     #a=0
     while 1:
@@ -66,19 +39,22 @@ def test():
         print('Waiting..')
         #time.sleep(5)
 
-def datac():
+#Calling Gaze Function
+def callgaze():
+    my_eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback, as_dictionary=True)
     while 1:
-        tmp = eye.__new__(eye)
-        tmp.__init__()
-        print(tmp.__dict__)
+        time.sleep(0)
+
 
 #Multiprocessing
 def main():
 
-    p1 = multiprocessing.Process(name="p1", target=datac)
+    p1 = multiprocessing.Process(name="p1", target=callgaze)
     p2 = multiprocessing.Process(name="p2", target=test)
     p2.start()
     p1.start()
+    p1.join()
+    p2.join()
 
 if __name__ == "__main__":
-   main()
+        main()
