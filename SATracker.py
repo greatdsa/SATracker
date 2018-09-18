@@ -1,8 +1,7 @@
-import multiprocessing
 import tobii_research as tr
 import time
 from statistics import mean
-import math
+import threading
 
 # Eye Tracker Initialization
 found_eyetrackers = tr.find_all_eyetrackers()
@@ -24,8 +23,7 @@ def gaze_data_callback(gaze_data):
 
 #Random Test Function
 def test():
-    #a=0
-    while 1:
+     while 1:
         #if 'gaze_point' in gaze_data_callback(gaze_data):
          #   data = gaze_data_callback['gaze_point']
 
@@ -33,7 +31,6 @@ def test():
            #     x = data[0] * 1920
             #    y = data[1] * 1080
              #   return [x, y]
-        #a+=1
         for x in range(0, 10):
             print("We're on time %d" % (x))
         print('Waiting..')
@@ -46,15 +43,16 @@ def callgaze():
         time.sleep(0)
 
 
-#Multiprocessing
+#Multithreading
 def main():
-
-    p1 = multiprocessing.Process(name="p1", target=callgaze)
-    p2 = multiprocessing.Process(name="p2", target=test)
-    p2.start()
-    p1.start()
-    p1.join()
-    p2.join()
+    thread1 = threading.Thread(target=callgaze)
+    thread2 = threading.Thread(target=test)
+    # Will execute both in parallel
+    thread1.start()
+    thread2.start()
+    # Joins threads back to the parent process, which is this program
+    thread1.join()
+    thread2.join()
 
 if __name__ == "__main__":
         main()
