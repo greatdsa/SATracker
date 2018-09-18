@@ -24,13 +24,6 @@ def gaze_data_callback(gaze_data):
 #Random Test Function
 def test():
      while 1:
-        #if 'gaze_point' in gaze_data_callback(gaze_data):
-         #   data = gaze_data_callback['gaze_point']
-
-          #  if s == 0:
-           #     x = data[0] * 1920
-            #    y = data[1] * 1080
-             #   return [x, y]
         for x in range(0, 10):
             print("We're on time %d" % (x))
         print('Waiting..')
