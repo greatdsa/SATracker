@@ -1,7 +1,7 @@
 import tobii_research as tr
 import time
 import math
-from statistics import mean
+from numpy import mean
 from fractions import Fraction as fr
 found_eyetrackers = tr.find_all_eyetrackers()
 
@@ -36,7 +36,7 @@ def gaze_data_callback(gaze_data):
         x = (left_3d, right_3d)
         print(x)
         print(type(x))
-        a = tuple(map(mean, zip(*x)))
+        a = tuple(mean(x,axis=0))
         print("3d gaze:",a)
         print(type(a))
         left_origin = gaze_data['left_gaze_origin_in_user_coordinate_system']
