@@ -1,6 +1,6 @@
 import tobii_research as tr
 import time
-from statistics import mean
+from numpy import mean
 import threading
 
 # Eye Tracker Initialization
@@ -17,7 +17,7 @@ def gaze_data_callback(gaze_data):
         left_3d = gaze_data['left_gaze_point_in_user_coordinate_system']
         right_3d = gaze_data['right_gaze_point_in_user_coordinate_system']
         gaze_point = (left_3d, right_3d)
-        gaze_point = tuple(map(mean, zip(*gaze_point)))
+        gaze_point = tuple(mean(gaze_point,axis=0))
         print("3d gaze point:",gaze_point)
 
 
