@@ -3,10 +3,9 @@ import time
 from numpy import mean
 import threading
 
-
-# Global Variables
-gaze_position = [0, 0]
+gaze_position = (0, 0)
 timestamp = 0
+gaze_position_2D_tuple = (gaze_position,)
 
 # Eye Tracker Initialization
 found_eyetrackers = tr.find_all_eyetrackers()
@@ -36,10 +35,13 @@ def gaze_data_callback(gaze_data):
 
 # Calling Gaze Function with timestamp
 def call_gaze():
+    global gaze_position_2D_tuple
     my_eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback, as_dictionary=True)
 
     while 1:
         print(gaze_position)
+        gaze_position_2D_tuple = gaze_position_2D_tuple + (gaze_position,)
+        print(gaze_position_2D_tuple)
         print(timestamp)
         ts = tr.get_system_time_stamp()/1000000
         print(ts)
@@ -67,8 +69,7 @@ def main():
     thread1.start()
     thread2.start()
 
-
 if __name__ == "__main__":
         gaze_position_2D = ()
-        gaze_position_2D_tuple = ()
+        # gaze_position_2D_tuple = (0,)
         main()
