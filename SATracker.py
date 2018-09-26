@@ -58,10 +58,9 @@ def sp():
     global Sample_point_tuple
     global gaze_position
     global timestamp
-    count = -1
-    time.sleep(5)
+    time.sleep(1)
     while 1:
-        # time.sleep(1)
+        time.sleep(0.01111111)
         if not (math.isnan(gaze_position[0]) and math.isnan(gaze_position[1])):
             Sample_point = (gaze_position[0],gaze_position[1], timestamp)
             Sample_point_tuple = Sample_point_tuple + (Sample_point,)
