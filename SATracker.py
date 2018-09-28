@@ -87,38 +87,209 @@ def interpolation():
     global Sample_point_tuple
     global interpolated_sample_point
     time_parameter = 0.075
+    time_parameters = tuple()
+    time_parameters = time_parameters + (0.075, 0.150, 0.225, 0.3, 0.375, 0.45, 0.525, 0.6, 0.675, 0.75, 0.825, 0.9,
+                                         0.975)
     timeout_limit = 1
     time.sleep(2)
     spt = Sample_point_tuple
     while 1:
         number_of_ts = len(Sample_point_tuple)
         if number_of_ts > 1:
+                # For multiple interpolation points
             for i in range(0, number_of_ts):
                 delta_ts = Sample_point_tuple[i][2] - Sample_point_tuple[i - 1][2]
-                if delta_ts <= time_parameter:
+                if delta_ts <= time_parameters[0]:
                     interpolated_sample_point = interpolated_sample_point + (Sample_point_tuple[i],)
                     print('Interpolated Sample Points', interpolated_sample_point)
                     new_interpolated_list = list(interpolated_sample_point)
                     print('List of tuples:', new_interpolated_list)
-                    # print(new_interpolated_list[1])
-                    # print(time_parameter)
+                elif delta_ts <= time_parameters[1]:
+                    num_of_points = int(delta_ts / time_parameter)
+                    for n in range(0, num_of_points):
+                        ts = Sample_point_tuple[i][2] - Sample_point_tuple[i - 1][2]
+                        ts = ts / num_of_points
+                        ts = Sample_point_tuple[i - 1][2] + ts
+                        x = Sample_point_tuple[i][0] - Sample_point_tuple[i - 1][0]
+                        x = x / num_of_points
+                        x = Sample_point_tuple[i - 1][0] + x
+                        y = Sample_point_tuple[i][1] - Sample_point_tuple[i - 1][1]
+                        y = y / num_of_points
+                        y = Sample_point_tuple[i][1] +y
+                        new_interpolated_point = (x, y, ts)
+                        interpolated_sample_point = interpolated_sample_point + (new_interpolated_point,)
+                        print('Interpolated Sample Points', interpolated_sample_point)
+                        new_interpolated_list = list(interpolated_sample_point)
+                        print('List of tuples:1 point inserted:', new_interpolated_list)
+                elif delta_ts <= time_parameters[2]:
+                    num_of_points = int(delta_ts / time_parameter)
+                    for n in range(0, num_of_points):
+                        ts = Sample_point_tuple[i - 1][2] + ts
+                        x = Sample_point_tuple[i][0] - Sample_point_tuple[i - 1][0]
+                        x = x / num_of_points
+                        x = Sample_point_tuple[i - 1][0] + x
+                        y = Sample_point_tuple[i][1] - Sample_point_tuple[i - 1][1]
+                        y = y / num_of_points
+                        y = Sample_point_tuple[i][1] +y
+                        new_interpolated_point = (x, y, ts)
+                        interpolated_sample_point = interpolated_sample_point + (new_interpolated_point,)
+                        print('Interpolated Sample Points', interpolated_sample_point)
+                        new_interpolated_list = list(interpolated_sample_point)
+                        print('List of tuples: 2 points inserted:', new_interpolated_list)
+                elif delta_ts <= time_parameters[3]:
+                    num_of_points = int(delta_ts / time_parameter)
+                    for n in range(0, num_of_points):
+                        ts = Sample_point_tuple[i - 1][2] + ts
+                        x = Sample_point_tuple[i][0] - Sample_point_tuple[i - 1][0]
+                        x = x / num_of_points
+                        x = Sample_point_tuple[i - 1][0] + x
+                        y = Sample_point_tuple[i][1] - Sample_point_tuple[i - 1][1]
+                        y = y / num_of_points
+                        y = Sample_point_tuple[i][1] +y
+                        new_interpolated_point = (x, y, ts)
+                        interpolated_sample_point = interpolated_sample_point + (new_interpolated_point,)
+                        print('Interpolated Sample Points:', interpolated_sample_point)
+                        new_interpolated_list = list(interpolated_sample_point)
+                        print('List of tuples:3 points inserted:', new_interpolated_list)
+                elif delta_ts <= time_parameters[4]:
+                    num_of_points = int(delta_ts / time_parameter)
+                    for n in range(0, num_of_points):
+                        ts = Sample_point_tuple[i - 1][2] + ts
+                        x = Sample_point_tuple[i][0] - Sample_point_tuple[i - 1][0]
+                        x = x / num_of_points
+                        x = Sample_point_tuple[i - 1][0] + x
+                        y = Sample_point_tuple[i][1] - Sample_point_tuple[i - 1][1]
+                        y = y / num_of_points
+                        y = Sample_point_tuple[i][1] +y
+                        new_interpolated_point = (x, y, ts)
+                        interpolated_sample_point = interpolated_sample_point + (new_interpolated_point,)
+                        print('Interpolated Sample Points:', interpolated_sample_point)
+                        new_interpolated_list = list(interpolated_sample_point)
+                        print('List of tuples:4 points inserted:', new_interpolated_list)
+                elif delta_ts <= time_parameters[5]:
+                    num_of_points = int(delta_ts / time_parameter)
+                    for n in range(0, num_of_points):
+                        ts = Sample_point_tuple[i - 1][2] + ts
+                        x = Sample_point_tuple[i][0] - Sample_point_tuple[i - 1][0]
+                        x = x / num_of_points
+                        x = Sample_point_tuple[i - 1][0] + x
+                        y = Sample_point_tuple[i][1] - Sample_point_tuple[i - 1][1]
+                        y = y / num_of_points
+                        y = Sample_point_tuple[i][1] +y
+                        new_interpolated_point = (x, y, ts)
+                        interpolated_sample_point = interpolated_sample_point + (new_interpolated_point,)
+                        print('Interpolated Sample Points:', interpolated_sample_point)
+                        new_interpolated_list = list(interpolated_sample_point)
+                        print('List of tuples:5 points inserted:', new_interpolated_list)
+                elif delta_ts <= time_parameters[6]:
+                    num_of_points = int(delta_ts / time_parameter)
+                    for n in range(0, num_of_points):
+                        ts = Sample_point_tuple[i - 1][2] + ts
+                        x = Sample_point_tuple[i][0] - Sample_point_tuple[i - 1][0]
+                        x = x / num_of_points
+                        x = Sample_point_tuple[i - 1][0] + x
+                        y = Sample_point_tuple[i][1] - Sample_point_tuple[i - 1][1]
+                        y = y / num_of_points
+                        y = Sample_point_tuple[i][1] +y
+                        new_interpolated_point = (x, y, ts)
+                        interpolated_sample_point = interpolated_sample_point + (new_interpolated_point,)
+                        print('Interpolated Sample Points:', interpolated_sample_point)
+                        new_interpolated_list = list(interpolated_sample_point)
+                        print('List of tuples:6 points inserted:', new_interpolated_list)
+                elif delta_ts <= time_parameters[7]:
+                    num_of_points = int(delta_ts / time_parameter)
+                    for n in range(0, num_of_points):
+                        ts = Sample_point_tuple[i - 1][2] + ts
+                        x = Sample_point_tuple[i][0] - Sample_point_tuple[i - 1][0]
+                        x = x / num_of_points
+                        x = Sample_point_tuple[i - 1][0] + x
+                        y = Sample_point_tuple[i][1] - Sample_point_tuple[i - 1][1]
+                        y = y / num_of_points
+                        y = Sample_point_tuple[i][1] +y
+                        new_interpolated_point = (x, y, ts)
+                        interpolated_sample_point = interpolated_sample_point + (new_interpolated_point,)
+                        print('Interpolated Sample Points:', interpolated_sample_point)
+                        new_interpolated_list = list(interpolated_sample_point)
+                        print('List of tuples:7 points inserted:', new_interpolated_list)
+                elif delta_ts <= time_parameters[8]:
+                    num_of_points = int(delta_ts / time_parameter)
+                    for n in range(0, num_of_points):
+                        ts = Sample_point_tuple[i - 1][2] + ts
+                        x = Sample_point_tuple[i][0] - Sample_point_tuple[i - 1][0]
+                        x = x / num_of_points
+                        x = Sample_point_tuple[i - 1][0] + x
+                        y = Sample_point_tuple[i][1] - Sample_point_tuple[i - 1][1]
+                        y = y / num_of_points
+                        y = Sample_point_tuple[i][1] +y
+                        new_interpolated_point = (x, y, ts)
+                        interpolated_sample_point = interpolated_sample_point + (new_interpolated_point,)
+                        print('Interpolated Sample Points:', interpolated_sample_point)
+                        new_interpolated_list = list(interpolated_sample_point)
+                        print('List of tuples:8 points inserted:', new_interpolated_list)
+                elif delta_ts <= time_parameters[9]:
+                    num_of_points = int(delta_ts / time_parameter)
+                    for n in range(0, num_of_points):
+                        ts = Sample_point_tuple[i - 1][2] + ts
+                        x = Sample_point_tuple[i][0] - Sample_point_tuple[i - 1][0]
+                        x = x / num_of_points
+                        x = Sample_point_tuple[i - 1][0] + x
+                        y = Sample_point_tuple[i][1] - Sample_point_tuple[i - 1][1]
+                        y = y / num_of_points
+                        y = Sample_point_tuple[i][1] +y
+                        new_interpolated_point = (x, y, ts)
+                        interpolated_sample_point = interpolated_sample_point + (new_interpolated_point,)
+                        print('Interpolated Sample Points:', interpolated_sample_point)
+                        new_interpolated_list = list(interpolated_sample_point)
+                        print('List of tuples:9 points inserted:', new_interpolated_list)
+                elif delta_ts <= time_parameters[10]:
+                    num_of_points = int(delta_ts / time_parameter)
+                    for n in range(0, num_of_points):
+                        ts = Sample_point_tuple[i - 1][2] + ts
+                        x = Sample_point_tuple[i][0] - Sample_point_tuple[i - 1][0]
+                        x = x / num_of_points
+                        x = Sample_point_tuple[i - 1][0] + x
+                        y = Sample_point_tuple[i][1] - Sample_point_tuple[i - 1][1]
+                        y = y / num_of_points
+                        y = Sample_point_tuple[i][1] +y
+                        new_interpolated_point = (x, y, ts)
+                        interpolated_sample_point = interpolated_sample_point + (new_interpolated_point,)
+                        print('Interpolated Sample Points:', interpolated_sample_point)
+                        new_interpolated_list = list(interpolated_sample_point)
+                        print('List of tuples:10 points inserted:', new_interpolated_list)
+                elif delta_ts <= time_parameters[11]:
+                    num_of_points = int(delta_ts / time_parameter)
+                    for n in range(0, num_of_points):
+                        ts = Sample_point_tuple[i - 1][2] + ts
+                        x = Sample_point_tuple[i][0] - Sample_point_tuple[i - 1][0]
+                        x = x / num_of_points
+                        x = Sample_point_tuple[i - 1][0] + x
+                        y = Sample_point_tuple[i][1] - Sample_point_tuple[i - 1][1]
+                        y = y / num_of_points
+                        y = Sample_point_tuple[i][1] +y
+                        new_interpolated_point = (x, y, ts)
+                        interpolated_sample_point = interpolated_sample_point + (new_interpolated_point,)
+                        print('Interpolated Sample Points:', interpolated_sample_point)
+                        new_interpolated_list = list(interpolated_sample_point)
+                        print('List of tuples:11 points inserted:', new_interpolated_list)
+                elif delta_ts <= time_parameters[12]:
+                    num_of_points = int(delta_ts / time_parameter)
+                    for n in range(0, num_of_points):
+                        ts = Sample_point_tuple[i - 1][2] + ts
+                        x = Sample_point_tuple[i][0] - Sample_point_tuple[i - 1][0]
+                        x = x / num_of_points
+                        x = Sample_point_tuple[i - 1][0] + x
+                        y = Sample_point_tuple[i][1] - Sample_point_tuple[i - 1][1]
+                        y = y / num_of_points
+                        y = Sample_point_tuple[i][1] +y
+                        new_interpolated_point = (x, y, ts)
+                        interpolated_sample_point = interpolated_sample_point + (new_interpolated_point,)
+                        print('Interpolated Sample Points:', interpolated_sample_point)
+                        new_interpolated_list = list(interpolated_sample_point)
+                        print('List of tuples:12 points inserted:', new_interpolated_list)
                 elif delta_ts >= timeout_limit:
                     new_interpolated_list = list(interpolated_sample_point)
                     del new_interpolated_list[i-1]
-                    print('List of tuples:', new_interpolated_list)
-                else:
-                    ts = int(delta_ts / time_parameter)
-                    x = Sample_point_tuple[i][0] - Sample_point_tuple[i - 1][0]
-                    x = x / 2
-                    x = Sample_point_tuple[i - 1][0] + x
-                    y = Sample_point_tuple[i][1] - Sample_point_tuple[i - 1][1]
-                    y = y / 2
-                    y = Sample_point_tuple[i][1] - Sample_point_tuple[i - 1][1]
-                    new_interpolated_point = (x, y, ts)
-                    interpolated_sample_point = interpolated_sample_point + (new_interpolated_point,)
-                    print('Interpolated Sample Points', interpolated_sample_point)
-                    new_interpolated_list = list(interpolated_sample_point)
-                    print('List of tuples:', new_interpolated_list)
+                    print('List of tuples: 1 point deleted:', new_interpolated_list)
         while Sample_point_tuple == spt:
             print('Waiting spt')
             time.sleep(0.01)
@@ -136,19 +307,15 @@ def interpolation():
                    #     distance_of_second_ts = distance_of_first_ts * 2
 
 
-
-
-
 # Multi-threading
 def main():
     thread1 = threading.Thread(target=call_gaze)
     thread2 = threading.Thread(target=sp)
     thread3 = threading.Thread(target=interpolation)
-    # Will execute both in parallel
+    # Will execute the threads in parallel
     thread1.start()
     thread2.start()
     thread3.start()
- 
 
 
 if __name__ == "__main__":
