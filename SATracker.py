@@ -13,9 +13,9 @@ Sample_point_tuple = tuple()
 interpolated_sample_point = ()
 running = True
 new_interpolated_list = []
-Median_Cal_X = tuple()
-Median_Cal_Y = tuple()
-noise_reducted = tuple()
+Median_Cal_x = tuple()
+Median_Cal_y = tuple()
+noise_reduced = tuple()
 
 # Eye Tracker Initialization
 found_eyetrackers = tr.find_all_eyetrackers()
@@ -70,7 +70,7 @@ def sp():
     global timestamp
     gp = gaze_position
     time.sleep(1)
-    while len(Sample_point_tuple) <= 2:
+    while len(Sample_point_tuple) <= 19:
         time.sleep(0.01111111)
         if not (math.isnan(gaze_position[0]) and math.isnan(gaze_position[1])):
             Sample_point = (gaze_position[0], gaze_position[1], timestamp)
@@ -105,7 +105,7 @@ def interpolation():
     spt = Sample_point_tuple
     #while len(Sample_point_tuple) <= 3:
     number_of_ts = len(Sample_point_tuple)
-    if (number_of_ts > 1 and number_of_ts < 4):
+    if (number_of_ts > 1 and number_of_ts < 21):
         for i in range(0, number_of_ts):
             delta_ts = Sample_point_tuple[i][2] - Sample_point_tuple[i - 1][2]
             if delta_ts <= time_parameters[0]:
@@ -345,38 +345,51 @@ def interpolation():
 def noise_reduction():
     print('I am Noise Reduction')
     global new_interpolated_list
-    global Median_Cal_X
-    global Median_Cal_Y
-    global noise_reducted
+    global Median_Cal_x
+    global Median_Cal_y
+    global noise_reduced
     i = len(new_interpolated_list)
-    if i == 3:
+
+    for k in range(0, i-2):
+        # print('I am i:length of new interpoalted:',i)
         # add X-coordinate of 3 sequential gaze positions into the special list (median calculation for X)
-        Median_Cal_X = Median_Cal_X + (new_interpolated_list[i - 3][0],)
-        Median_Cal_X = Median_Cal_X + (new_interpolated_list[i - 2][0],)
-        Median_Cal_X = Median_Cal_X + (new_interpolated_list[i - 1][0],)
+        Median_Cal_x = Median_Cal_x + (new_interpolated_list[i - 3][0],)
+        Median_Cal_x = Median_Cal_x + (new_interpolated_list[i - 2][0],)
+        Median_Cal_x = Median_Cal_x + (new_interpolated_list[i - 1][0],)
 
         # add Y-coordinate of 3 sequential gaze positions into the special list (median calculation for Y)
-        Median_Cal_Y = Median_Cal_Y + (new_interpolated_list[i - 3][1],)
-        Median_Cal_Y = Median_Cal_Y + (new_interpolated_list[i - 2][1],)
-        Median_Cal_Y = Median_Cal_Y + (new_interpolated_list[i - 1][1],)
+        Median_Cal_y = Median_Cal_y + (new_interpolated_list[i - 3][1],)
+        Median_Cal_y = Median_Cal_y + (new_interpolated_list[i - 2][1],)
+        Median_Cal_y = Median_Cal_y + (new_interpolated_list[i - 1][1],)
 
         # calculate the median of 3 gaze points
-        median_x = np.median(Median_Cal_X)
-        print('Median of x:',median_x)
-        median_y = np.median(Median_Cal_Y)
-        print('Median of y:', median_y)
+        median_x = np.median(Median_Cal_x)
+       # print('Median of x:',median_x)
+        median_y = np.median(Median_Cal_y)
+       # print('Median of y:', median_y)
 
         # empties the tuple
-        del Median_Cal_X, Median_Cal_Y
+        del Median_Cal_x, Median_Cal_y
+        Median_Cal_x = tuple()
+        Median_Cal_y = tuple()
 
         # create tuple for the median position (x,y,t)
-        noise_reducted = noise_reducted + (median_x, median_y, new_interpolated_list[i - 2][2],)
-        print('Noise Reducted:', noise_reducted)
+        median_tuple = (median_x, median_y, new_interpolated_list[i - 2][2],)
+        noise_reduced = noise_reduced + (median_tuple,)
+        print('Noise Reduced:', noise_reduced)
         gaze_last = new_interpolated_list[i - 1]
 
         # delete the last two gaze points from the gaze point list
-        del new_interpolated_list[i-1:i], new_interpolated_list[i - 2:i]
+        del new_interpolated_list[i-1], new_interpolated_list[i - 2]
 
+       #  new_interpolated_list = tuple(new_interpolated_list)
+        print('New Interpolated List:',new_interpolated_list)
+        new_interpolated_list.append(median_tuple)
+        #print(new_interpolated_list)
+        #print('Before:',i)
+        i = len(new_interpolated_list)
+        #i = i - 1
+        #print('After:',i)
         # add the median point into the gaze point list
         # print(type(new_interpolated_list))
         # print(new_interpolated_list)
@@ -388,12 +401,12 @@ def noise_reduction():
         # new_interpolated_list = tuple(new_interpolated_list)
         # print(new_interpolated_list)
         # new_interpolated_list = tuple(mean(new_interpolated_list, axis=0))
-        # print('Noise Reducted:', new_interpolated_list)
-
+        # print('Noise Reduced:', new_interpolated_list)
 
 
 # Velocity Calculator Function
- # def velocity_calculator():
+def velocity_calculator():
+    global noise_reduced
 
 
 # Multi-threading
