@@ -15,6 +15,7 @@ running = True
 new_interpolated_list = []
 Median_Cal_X = tuple()
 Median_Cal_Y = tuple()
+noise_reducted = tuple()
 
 # Eye Tracker Initialization
 found_eyetrackers = tr.find_all_eyetrackers()
@@ -346,9 +347,9 @@ def noise_reduction():
     global new_interpolated_list
     global Median_Cal_X
     global Median_Cal_Y
-    gaze_point_2d = tuple()
+    global noise_reducted
     i = len(new_interpolated_list)
-    if i >= 3:
+    if i == 3:
         # add X-coordinate of 3 sequential gaze positions into the special list (median calculation for X)
         Median_Cal_X = Median_Cal_X + (new_interpolated_list[i - 3][0],)
         Median_Cal_X = Median_Cal_X + (new_interpolated_list[i - 2][0],)
@@ -369,23 +370,30 @@ def noise_reduction():
         del Median_Cal_X, Median_Cal_Y
 
         # create tuple for the median position (x,y,t)
-        gaze_point_2d = gaze_point_2d + (median_x, median_y, new_interpolated_list[i - 2][2],)
-
+        noise_reducted = noise_reducted + (median_x, median_y, new_interpolated_list[i - 2][2],)
+        print('Noise Reducted:', noise_reducted)
         gaze_last = new_interpolated_list[i - 1]
 
         # delete the last two gaze points from the gaze point list
-        del new_interpolated_list[i - 1], new_interpolated_list[i - 2]
+        del new_interpolated_list[i-1:i], new_interpolated_list[i - 2:i]
 
         # add the median point into the gaze point list
-        new_interpolated_list.append(gaze_point_2d)
+        # print(type(new_interpolated_list))
+        # print(new_interpolated_list)
+        # new_interpolated_list.append(gaze_point_2d)
+        # print(new_interpolated_list)
 
         # add the original last gaze point
-        new_interpolated_list.append(gaze_last)
-        print('Noise Reducted:', new_interpolated_list)
+        # new_interpolated_list.append(gaze_last)
+        # new_interpolated_list = tuple(new_interpolated_list)
+        # print(new_interpolated_list)
+        # new_interpolated_list = tuple(mean(new_interpolated_list, axis=0))
+        # print('Noise Reducted:', new_interpolated_list)
+
 
 
 # Velocity Calculator Function
-# def velocity_calculator():
+ # def velocity_calculator():
 
 
 # Multi-threading
