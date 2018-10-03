@@ -16,6 +16,7 @@ new_interpolated_list = []
 Median_Cal_x = tuple()
 Median_Cal_y = tuple()
 noise_reduced = tuple()
+velocity = tuple()
 
 # Eye Tracker Initialization
 found_eyetrackers = tr.find_all_eyetrackers()
@@ -403,10 +404,29 @@ def noise_reduction():
         # new_interpolated_list = tuple(mean(new_interpolated_list, axis=0))
         # print('Noise Reduced:', new_interpolated_list)
 
+        # Call Velocity Calculator
+    velocity_calculator()
+
 
 # Velocity Calculator Function
 def velocity_calculator():
     global noise_reduced
+    i = len(noise_reduced)
+    global velocity
+    for k in range (0, i-2):
+        # Calculating the distance
+        distance = math.sqrt((noise_reduced[i-1][0] - noise_reduced[i-2][0])**2 +
+                (noise_reduced[i-1][1] - noise_reduced[i-2][1])**2)
+        # Calculating the time
+        time = float(noise_reduced[i-1][2] - noise_reduced[i-2][2])
+        # Converting noise reduced tuple to list in order to delete the last point
+        noise_reduced = list(noise_reduced)
+        del noise_reduced[i-1]
+        i = len(noise_reduced)
+        # adding the calcualted velocity to the tuple of velocity
+        velocity = velocity + (distance / time,)
+    print(velocity)
+
 
 
 # Multi-threading
