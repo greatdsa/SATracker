@@ -17,6 +17,7 @@ Median_Cal_x = tuple()
 Median_Cal_y = tuple()
 noise_reduced = tuple()
 velocity = tuple()
+fixation_points = tuple()
 
 # Eye Tracker Initialization
 found_eyetrackers = tr.find_all_eyetrackers()
@@ -411,21 +412,48 @@ def noise_reduction():
 # Velocity Calculator Function
 def velocity_calculator():
     global noise_reduced
-    i = len(noise_reduced)
+    noise_reduced_temp = noise_reduced
+    i = len(noise_reduced_temp)
     global velocity
     for k in range (0, i-2):
         # Calculating the distance
-        distance = math.sqrt((noise_reduced[i-1][0] - noise_reduced[i-2][0])**2 +
-                (noise_reduced[i-1][1] - noise_reduced[i-2][1])**2)
+        distance = math.sqrt((noise_reduced_temp[i-1][0] - noise_reduced_temp[i-2][0])**2 +
+                (noise_reduced_temp[i-1][1] - noise_reduced_temp[i-2][1])**2)
         # Calculating the time
-        time = float(noise_reduced[i-1][2] - noise_reduced[i-2][2])
+        time = float(noise_reduced_temp[i-1][2] - noise_reduced_temp[i-2][2])
         # Converting noise reduced tuple to list in order to delete the last point
-        noise_reduced = list(noise_reduced)
-        del noise_reduced[i-1]
-        i = len(noise_reduced)
-        # adding the calcualted velocity to the tuple of velocity
-        velocity = velocity + (distance / time,)
-    print(velocity)
+        noise_reduced_temp = list(noise_reduced_temp)
+
+        del noise_reduced_temp[i-1]
+        i = len(noise_reduced_temp)
+        # adding the calculated velocity to the tuple of velocity
+        velocity = velocity + (abs(distance / time),)
+    velocity = list(velocity)
+    velocity = tuple(velocity)
+    print('Velocity:',velocity)
+    fixation()
+
+
+def fixation():
+    global velocity
+    global noise_reduced
+    global fixation_points
+    i = len(velocity)
+    j = len(noise_reduced)
+    noise_reduced = list(noise_reduced)
+    velocity = list(velocity)
+    for k in range(0, i-1):
+        if velocity[i-1] > 30:
+            del velocity[i-1]
+            del noise_reduced[i]
+            i = len(velocity)
+        else:
+            fixation_points = fixation_points + (noise_reduced[i],)
+            del velocity[i-1]
+            del noise_reduced[i]
+            i = len(velocity)
+            print('Fixation Point:',fixation_points)
+
 
 
 
