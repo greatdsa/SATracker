@@ -8,7 +8,6 @@ import math
 # Global Variables
 gaze_position = (0, 0)
 timestamp = 0
-#gaze_position_2D_tuple = (gaze_position,)
 Sample_point_tuple = tuple()
 interpolated_sample_point = ()
 running = True
@@ -18,8 +17,17 @@ Median_Cal_y = tuple()
 noise_reduced = tuple()
 velocity = tuple()
 fixation_points = tuple()
+# Screen size
+screen_x = 31
+screen_y = 17.5
 # Calculated Threshold
-threshold = 0.001
+threshold = 35
+
+Max_Distance_Between_Fixation = 0.5
+Max_Fixation_Duration = 1
+Max_Time_Between_Fixation = 0.075
+Min_Fixation_Duration = 0.1
+FIXATION_POINTS = tuple()
 
 # Eye Tracker Initialization
 found_eyetrackers = tr.find_all_eyetrackers()
@@ -43,6 +51,7 @@ def gaze_data_callback(gaze_data):
         #print('Right:',right_eye)
         gaze_position = (left_eye, right_eye)
         gaze_position = tuple(mean(gaze_position, axis=0))
+        gaze_position = (gaze_position[0]*screen_x, gaze_position[1]*screen_y)
         #print('With mean:', gaze_position)
         timestamp = gaze_data['device_time_stamp']
         timestamp = timestamp/1000000
@@ -418,7 +427,7 @@ def velocity_calculator():
     noise_reduced_temp = noise_reduced
     i = len(noise_reduced_temp)
     global velocity
-    for k in range (0, i-2):
+    for k in range(0, i-2):
         # Calculating the distance
         distance = math.sqrt((noise_reduced_temp[i-1][0] - noise_reduced_temp[i-2][0])**2 +
                 (noise_reduced_temp[i-1][1] - noise_reduced_temp[i-2][1])**2)
@@ -437,29 +446,87 @@ def velocity_calculator():
     print('Velocity:',velocity)
     fixation()
 
-
+# Fixation Group Function
 def fixation():
     global threshold
     global velocity
     global noise_reduced
     global fixation_points
+    global Max_Distance_Between_Fixation
+    global Max_Fixation_Duration
+    global Max_Time_Between_Fixation
+    global Min_Fixation_Duration
+    global FIXATION_POINTS
     i = len(velocity)
     j = len(noise_reduced)
-    noise_reduced = list(noise_reduced)
     velocity = list(velocity)
     for k in range(0, i-1):
         if velocity[i-1] > threshold:
             del velocity[i-1]
+            noise_reduced = list(noise_reduced)
             del noise_reduced[i]
+            noise_reduced = tuple(noise_reduced)
             i = len(velocity)
         else:
-            fixation_points = fixation_points + (noise_reduced[i],)
-            del velocity[i-1]
-            del noise_reduced[i]
-            i = len(velocity)
-            print('Fixation Point:',fixation_points)
+            length = len(fixation_points)
+            if len(fixation_points) == 0:
+                fixation_points = fixation_points + (noise_reduced[i],)
+                del velocity[i-1]
+                noise_reduced = list(noise_reduced)
+                del noise_reduced[i]
+                noise_reduced = tuple(noise_reduced)
+                i = len(velocity)
+            else:
+                # time interval between the current being checked gaze point and the last fixation point in the fixation list
+                time_interval = (noise_reduced[i][2] - fixation_points[length - 1][2])
 
+                # time interval between the current being checked gaze point and the first fixation point in the fixation list
+                time_sum = float(noise_reduced[i][2] - fixation_points[0][2])
 
+                distance = float(math.sqrt((fixation_points[length - 1][0] - fixation_points[length - 2][0]) ** 2 +
+                                     (fixation_points[length - 1][1] - fixation_points[length - 2][1]) ** 2))
+
+                # If all 3 conditions satisfied, then we will add the point as fixation point
+                if distance < Max_Distance_Between_Fixation and time_interval < Max_Time_Between_Fixation and \
+                        time_sum < Max_Fixation_Duration:
+                    fixation_points = fixation_points + noise_reduced
+
+                # if the fixation group is long enough (enough fixation points) to be an eligible fixation group
+                elif (fixation_points[length - 1][2] - fixation_points[0][2]) > Min_Fixation_Duration:
+                    # calculate the midpoint of the fixation group
+                    x_average = 0
+                    y_average = 0
+                    z_average = 0
+                    for N in range(0, length):
+                        x_average += fixation_points[N][0]
+                        print(x_average)
+                        y_average += fixation_points[N][1]
+                        z_average += fixation_points[N][2]
+                    x_average = x_average / length
+                    y_average = y_average / length
+                    z_average = z_average / length
+
+                    fixation_center_point = [x_average, y_average, z_average]
+
+                    # save the midpoint of this fixation group into the special list (fixation center point list)
+                    FIXATION_POINTS = FIXATION_POINTS + (fixation_center_point,)
+
+                    # delete the list of current fixation points
+                    del fixation_points
+                    fixation_points = tuple()
+                    # the current fixation point as the first fixation point of the next fixation group
+                    fixation_points = fixation_points + noise_reduced[i]
+                else:
+                    del fixation_points
+                    fixation_points = tuple()
+                    fixation_points = fixation_points + noise_reduced[i]
+        if len(FIXATION_POINTS) == 2:  # if there are two calculated center points in this list
+            # calculate the distance between two fixation center points (also two fixation groups)
+            L = math.sqrt((FIXATION_POINTS[0][0] - FIXATION_POINTS[1][0]) ** 2 +
+                          (FIXATION_POINTS[0][1] - FIXATION_POINTS[1][1]) ** 2)
+
+    print('Fixation Points:', fixation_points)
+    print('Mid-points:',FIXATION_POINTS)
 
 
 # Multi-threading
@@ -467,15 +534,11 @@ def main():
     thread1 = threading.Thread(target=call_gaze)
     thread2 = threading.Thread(target=sp)
     thread3 = threading.Thread(target=interpolation)
-    #thread4 = threading.Thread(target=noise_reduction)
-    # Will execute both in parallel
+    # Will execute them in parallel
     thread1.start()
     thread2.start()
     thread3.start()
-    #thread4.start()
 
 
 if __name__ == "__main__":
-        gaze_position_2D = ()
-        # gaze_position_2D_tuple = (0,)
         main()
