@@ -18,6 +18,8 @@ Median_Cal_y = tuple()
 noise_reduced = tuple()
 velocity = tuple()
 fixation_points = tuple()
+# Calculated Threshold
+threshold = 0.001
 
 # Eye Tracker Initialization
 found_eyetrackers = tr.find_all_eyetrackers()
@@ -412,6 +414,7 @@ def noise_reduction():
 # Velocity Calculator Function
 def velocity_calculator():
     global noise_reduced
+    global threshold
     noise_reduced_temp = noise_reduced
     i = len(noise_reduced_temp)
     global velocity
@@ -421,6 +424,7 @@ def velocity_calculator():
                 (noise_reduced_temp[i-1][1] - noise_reduced_temp[i-2][1])**2)
         # Calculating the time
         time = float(noise_reduced_temp[i-1][2] - noise_reduced_temp[i-2][2])
+
         # Converting noise reduced tuple to list in order to delete the last point
         noise_reduced_temp = list(noise_reduced_temp)
 
@@ -435,6 +439,7 @@ def velocity_calculator():
 
 
 def fixation():
+    global threshold
     global velocity
     global noise_reduced
     global fixation_points
@@ -443,7 +448,7 @@ def fixation():
     noise_reduced = list(noise_reduced)
     velocity = list(velocity)
     for k in range(0, i-1):
-        if velocity[i-1] > 30:
+        if velocity[i-1] > threshold:
             del velocity[i-1]
             del noise_reduced[i]
             i = len(velocity)
