@@ -462,11 +462,10 @@ def fixation():
     fixation_count = 0
     i = len(velocity)
     j = len(noise_reduced)
-    print(i,j)
     velocity = list(velocity)
 
     # Reading CSV File to find out the number of strokes
-    with open(r"C:\Users\Admin\Desktop\Gestenkatalog2.csv") as f:
+    with open(r"C:\Users\Admin\Desktop\Gestenkatalog.csv") as f:
         reader = csv.reader(f)
         data = ()
         for row in reader:
@@ -485,7 +484,7 @@ def fixation():
             i = len(velocity)
         else:
             length = len(fixation_points)
-               # If the group is empty
+            # If the group is empty
             if len(fixation_points) == 0:
                 fixation_points = fixation_points + (noise_reduced[i],)
                 del velocity[i-1]
@@ -494,35 +493,35 @@ def fixation():
                 noise_reduced = tuple(noise_reduced)
                 i = len(velocity)
             else:
+                # print(noise_reduced)
+                # print(fixation_points)
                 # time interval between the current being checked gaze point and the last fixation point in the fixation list
                 time_interval = (noise_reduced[i][2] - fixation_points[length - 1][2])
-
                 # time interval between the current being checked gaze point and the first fixation point in the fixation list
-                time_sum = float(noise_reduced[i][2] - fixation_points[0][2])
+                time_sum = noise_reduced[i][2] - fixation_points[0][2]
 
-                distance = float(math.sqrt((fixation_points[length - 1][0] - fixation_points[length - 2][0]) ** 2 +
-                                     (fixation_points[length - 1][1] - fixation_points[length - 2][1]) ** 2))
+                distance = math.sqrt((fixation_points[length - 1][0] - fixation_points[length - 2][0]) ** 2 +
+                                     (fixation_points[length - 1][1] - fixation_points[length - 2][1]) ** 2)
 
                 # If all 3 conditions satisfied, then we will add the point as fixation point
                 if distance < Max_Distance_Between_Fixation and time_interval < Max_Time_Between_Fixation:
                         # If it's not the last fixation point
-                        if (fixation_count < (number_of_strokes - 1)) and (time_sum < Max_Fixation_Duration):
+                    if (fixation_count < (number_of_strokes - 1)) and (time_sum < Max_Fixation_Duration):
                             fixation_points = fixation_points + noise_reduced
-                            fixation_count = fixation_count + 1
+
                 else:
                     # if the fixation group is long enough (enough fixation points) to be an eligible fixation group
                     if (fixation_points[length - 1][2] - fixation_points[0][2]) > Min_Fixation_Duration:
+                        print('I am here')
+                        fixation_count = fixation_count + 1
                         # calculate the midpoint of the fixation group
                         x_average = 0
                         y_average = 0
-                        z_average = 0
-                        for N in range(0, length):
+                        for N in range(0, length - 1):
                             x_average = x_average + fixation_points[N][0]
-                            print(x_average)
                             y_average = y_average + fixation_points[N][1]
                         x_average = x_average / length
                         y_average = y_average / length
-                        fixation_center_point = tuple()
                         fixation_center_point = (x_average, y_average)
 
                         # save the midpoint of this fixation group into the special list (fixation center point list)
@@ -532,13 +531,17 @@ def fixation():
                         del fixation_points
                         fixation_points = tuple()
                         # the current fixation point as the first fixation point of the next fixation group
-                        fixation_points = fixation_points + noise_reduced[i]
+                        fixation_points = fixation_points + (noise_reduced[i],)
+
+                    # if there is not enough fixation points in the fixation group
                     else:
-                        del fixation_points
-                        fixation_points = tuple()
-                        fixation_points = fixation_points + noise_reduced[i]
-    print('Fixation Points:', fixation_points)
-    print('Mid-points:', FIXATION_POINTS)
+                        # this fixation group is invalid
+                         del fixation_points
+                         fixation_points = tuple()
+                        # the current fixation point as the first fixation point of the next fixation group
+                         fixation_points = fixation_points + (noise_reduced[i],)
+        print('Fixation Points:', fixation_points)
+        print('Mid-points:', FIXATION_POINTS)
 
 
 # Multi-threading
