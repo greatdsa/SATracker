@@ -65,16 +65,6 @@ def call_gaze():
     global timestamp
     my_eyetracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, gaze_data_callback, as_dictionary=True)
 
-    #while 1:
-       # print('Gaze Position:',gaze_position)
-        #gaze_position_2D_tuple = gaze_position_2D_tuple + (gaze_position,)
-        #print(gaze_position_2D_tuple)
-        #print(timestamp)
-
-        # ts = tr.get_system_time_stamp()/1000000
-        # print(ts)
-       # time.sleep(2)
-
 
 # Creating the tuple for sample points
 def sp():
@@ -92,17 +82,6 @@ def sp():
             print('Sample points:', Sample_point_tuple)
         while gaze_position == gp:
             time.sleep(0.01)
-          #  print(len(Sample_point_tuple))
-          #  sample_point_list = list(Sample_point_tuple)
-          #  print(sample_point_list)
-          #  list2 = sample_point_list[:]
-          #  for item in sample_point_list:
-          #      count += 1
-          #      if item in list2:
-         #           del sample_point_list[count]
-           # Sample_point_list = tuple(Sample_point_tuple)
-          #  print('Sample Points R:', sample_point_list)
-
 
 # Gap Filling Function
 def interpolation():
@@ -342,18 +321,6 @@ def interpolation():
           #  time.sleep(0.01)
     noise_reduction()
 
-        # print(len(interpolated_sample_point))
-          #      loc_of_sp = i
-           #     num_interpolation = int(delta_ts / time_parameter)
-            #    a = len(i)
-             #   for b in range(1,a)
-              #      if num_interpolation == b:
-               #         distance_of_ts[b] = delta_ts/(b+1)
-                #        distance_of_second_ts = distance_of_first_ts * 2
-                 #   elif num_interpolation == i+1:
-                  #      distance_of_first_ts = delta_ts/
-                   #     distance_of_second_ts = distance_of_first_ts * 2
-
 
 # Noise Reduction Function
 def noise_reduction():
@@ -378,9 +345,8 @@ def noise_reduction():
 
         # calculate the median of 3 gaze points
         median_x = np.median(Median_Cal_x)
-       # print('Median of x:',median_x)
         median_y = np.median(Median_Cal_y)
-       # print('Median of y:', median_y)
+
 
         # empties the tuple
         del Median_Cal_x, Median_Cal_y
@@ -395,27 +361,10 @@ def noise_reduction():
 
         # delete the last two gaze points from the gaze point list
         del new_interpolated_list[i-1], new_interpolated_list[i - 2]
-
-       #  new_interpolated_list = tuple(new_interpolated_list)
         print('New Interpolated List:',new_interpolated_list)
         new_interpolated_list.append(median_tuple)
-        #print(new_interpolated_list)
-        #print('Before:',i)
         i = len(new_interpolated_list)
-        #i = i - 1
-        #print('After:',i)
-        # add the median point into the gaze point list
-        # print(type(new_interpolated_list))
-        # print(new_interpolated_list)
-        # new_interpolated_list.append(gaze_point_2d)
-        # print(new_interpolated_list)
 
-        # add the original last gaze point
-        # new_interpolated_list.append(gaze_last)
-        # new_interpolated_list = tuple(new_interpolated_list)
-        # print(new_interpolated_list)
-        # new_interpolated_list = tuple(mean(new_interpolated_list, axis=0))
-        # print('Noise Reduced:', new_interpolated_list)
 
         # Call Velocity Calculator
     velocity_calculator()
@@ -442,8 +391,6 @@ def velocity_calculator():
         i = len(noise_reduced_temp)
         # adding the calculated velocity to the tuple of velocity
         velocity = velocity + (abs(distance / time),)
-    velocity = list(velocity)
-    velocity = tuple(velocity)
     print('Velocity:',velocity)
     fixation()
 
@@ -461,7 +408,6 @@ def fixation():
     global FIXATION_POINTS
     fixation_count = 0
     i = len(velocity)
-    j = len(noise_reduced)
     velocity = list(velocity)
 
     # Reading CSV File to find out the number of strokes
@@ -470,17 +416,15 @@ def fixation():
         data = ()
         for row in reader:
             data = data + tuple(row)
-        # print(data[0])
         separated = data[0].split(';')
         number_of_strokes = (len(separated) - 1)
-        # print(separated)
-        # print(separated[1])
     for k in range(0, i-1):
+        # Checks if the velocity between two points is greater than the threshold velocity
         if velocity[i-1] > threshold:
             del velocity[i-1]
-            noise_reduced = list(noise_reduced)
+            #noise_reduced = list(noise_reduced)
             del noise_reduced[i]
-            noise_reduced = tuple(noise_reduced)
+           # noise_reduced = tuple(noise_reduced)
             i = len(velocity)
         else:
             length = len(fixation_points)
@@ -493,11 +437,12 @@ def fixation():
                 noise_reduced = tuple(noise_reduced)
                 i = len(velocity)
             else:
-                # print(noise_reduced)
-                # print(fixation_points)
-                # time interval between the current being checked gaze point and the last fixation point in the fixation list
+                del velocity[i-1]
+                # time interval between the current being checked gaze point and
+                # the last fixation point in the fixation list
                 time_interval = (noise_reduced[i][2] - fixation_points[length - 1][2])
-                # time interval between the current being checked gaze point and the first fixation point in the fixation list
+                # time interval between the current being checked gaze point and
+                # the first fixation point in the fixation list
                 time_sum = noise_reduced[i][2] - fixation_points[0][2]
 
                 distance = math.sqrt((fixation_points[length - 1][0] - fixation_points[length - 2][0]) ** 2 +
@@ -507,12 +452,11 @@ def fixation():
                 if distance < Max_Distance_Between_Fixation and time_interval < Max_Time_Between_Fixation:
                         # If it's not the last fixation point
                     if (fixation_count < (number_of_strokes - 1)) and (time_sum < Max_Fixation_Duration):
-                            fixation_points = fixation_points + noise_reduced
-
+                            fixation_points = fixation_points + (noise_reduced,)
                 else:
+
                     # if the fixation group is long enough (enough fixation points) to be an eligible fixation group
                     if (fixation_points[length - 1][2] - fixation_points[0][2]) > Min_Fixation_Duration:
-                        print('I am here')
                         fixation_count = fixation_count + 1
                         # calculate the midpoint of the fixation group
                         x_average = 0
@@ -536,10 +480,11 @@ def fixation():
                     # if there is not enough fixation points in the fixation group
                     else:
                         # this fixation group is invalid
-                         del fixation_points
-                         fixation_points = tuple()
+                        del fixation_points
+                        fixation_points = tuple()
                         # the current fixation point as the first fixation point of the next fixation group
-                         fixation_points = fixation_points + (noise_reduced[i],)
+                        fixation_points = fixation_points + (noise_reduced[i],)
+            i = len(velocity)
         print('Fixation Points:', fixation_points)
         print('Mid-points:', FIXATION_POINTS)
 
