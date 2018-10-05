@@ -4,6 +4,7 @@ from numpy import mean
 import numpy as np
 import threading
 import math
+import csv
 
 # Global Variables
 gaze_position = (0, 0)
@@ -446,6 +447,7 @@ def velocity_calculator():
     print('Velocity:',velocity)
     fixation()
 
+
 # Fixation Group Function
 def fixation():
     global threshold
@@ -457,9 +459,23 @@ def fixation():
     global Max_Time_Between_Fixation
     global Min_Fixation_Duration
     global FIXATION_POINTS
+    fixation_count = 0
     i = len(velocity)
     j = len(noise_reduced)
+    print(i,j)
     velocity = list(velocity)
+
+    # Reading CSV File to find out the number of strokes
+    with open(r"C:\Users\Admin\Desktop\Gestenkatalog2.csv") as f:
+        reader = csv.reader(f)
+        data = ()
+        for row in reader:
+            data = data + tuple(row)
+        # print(data[0])
+        separated = data[0].split(';')
+        number_of_strokes = (len(separated) - 1)
+        # print(separated)
+        # print(separated[1])
     for k in range(0, i-1):
         if velocity[i-1] > threshold:
             del velocity[i-1]
@@ -469,6 +485,7 @@ def fixation():
             i = len(velocity)
         else:
             length = len(fixation_points)
+               # If the group is empty
             if len(fixation_points) == 0:
                 fixation_points = fixation_points + (noise_reduced[i],)
                 del velocity[i-1]
@@ -487,46 +504,41 @@ def fixation():
                                      (fixation_points[length - 1][1] - fixation_points[length - 2][1]) ** 2))
 
                 # If all 3 conditions satisfied, then we will add the point as fixation point
-                if distance < Max_Distance_Between_Fixation and time_interval < Max_Time_Between_Fixation and \
-                        time_sum < Max_Fixation_Duration:
-                    fixation_points = fixation_points + noise_reduced
-
-                # if the fixation group is long enough (enough fixation points) to be an eligible fixation group
-                elif (fixation_points[length - 1][2] - fixation_points[0][2]) > Min_Fixation_Duration:
-                    # calculate the midpoint of the fixation group
-                    x_average = 0
-                    y_average = 0
-                    z_average = 0
-                    for N in range(0, length):
-                        x_average += fixation_points[N][0]
-                        print(x_average)
-                        y_average += fixation_points[N][1]
-                        z_average += fixation_points[N][2]
-                    x_average = x_average / length
-                    y_average = y_average / length
-                    z_average = z_average / length
-
-                    fixation_center_point = [x_average, y_average, z_average]
-
-                    # save the midpoint of this fixation group into the special list (fixation center point list)
-                    FIXATION_POINTS = FIXATION_POINTS + (fixation_center_point,)
-
-                    # delete the list of current fixation points
-                    del fixation_points
-                    fixation_points = tuple()
-                    # the current fixation point as the first fixation point of the next fixation group
-                    fixation_points = fixation_points + noise_reduced[i]
+                if distance < Max_Distance_Between_Fixation and time_interval < Max_Time_Between_Fixation:
+                        # If it's not the last fixation point
+                        if (fixation_count < (number_of_strokes - 1)) and (time_sum < Max_Fixation_Duration):
+                            fixation_points = fixation_points + noise_reduced
+                            fixation_count = fixation_count + 1
                 else:
-                    del fixation_points
-                    fixation_points = tuple()
-                    fixation_points = fixation_points + noise_reduced[i]
-        if len(FIXATION_POINTS) == 2:  # if there are two calculated center points in this list
-            # calculate the distance between two fixation center points (also two fixation groups)
-            L = math.sqrt((FIXATION_POINTS[0][0] - FIXATION_POINTS[1][0]) ** 2 +
-                          (FIXATION_POINTS[0][1] - FIXATION_POINTS[1][1]) ** 2)
+                    # if the fixation group is long enough (enough fixation points) to be an eligible fixation group
+                    if (fixation_points[length - 1][2] - fixation_points[0][2]) > Min_Fixation_Duration:
+                        # calculate the midpoint of the fixation group
+                        x_average = 0
+                        y_average = 0
+                        z_average = 0
+                        for N in range(0, length):
+                            x_average = x_average + fixation_points[N][0]
+                            print(x_average)
+                            y_average = y_average + fixation_points[N][1]
+                        x_average = x_average / length
+                        y_average = y_average / length
+                        fixation_center_point = tuple()
+                        fixation_center_point = (x_average, y_average)
 
+                        # save the midpoint of this fixation group into the special list (fixation center point list)
+                        FIXATION_POINTS = FIXATION_POINTS + (fixation_center_point,)
+
+                        # delete the list of current fixation points
+                        del fixation_points
+                        fixation_points = tuple()
+                        # the current fixation point as the first fixation point of the next fixation group
+                        fixation_points = fixation_points + noise_reduced[i]
+                    else:
+                        del fixation_points
+                        fixation_points = tuple()
+                        fixation_points = fixation_points + noise_reduced[i]
     print('Fixation Points:', fixation_points)
-    print('Mid-points:',FIXATION_POINTS)
+    print('Mid-points:', FIXATION_POINTS)
 
 
 # Multi-threading
